@@ -1,6 +1,8 @@
 import org.jdom2.*;
+import org.jdom2.filter.*;
 import org.jdom2.input.*;
 import org.jdom2.output.*;
+import org.jdom2.xpath.*;
 
 import java.io.*;
 import java.math.*;
@@ -11,7 +13,7 @@ public class JDOMReader {
 
     private static final String XMLDATEFORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
-    public List<Customer> getDataFromXML(String filename) throws DataConversionException, ParseException {
+    public List<Customer> getDataFromXML(String filename, String filter) throws DataConversionException, ParseException {
 
         List<Customer> data = new ArrayList<>();
         File file = new File(filename);
@@ -25,8 +27,12 @@ public class JDOMReader {
             return null;
         }
 
-        Element root = document.getRootElement();
-        List<Element> customerElements = root.getChildren("customer");
+//        Element root = document.getRootElement();
+//        List<Element> customerElements = root.getChildren("customer");
+
+        XPathFactory xPathFactory = XPathFactory.instance();
+        XPathExpression<Element> xPathExpression = xPathFactory.compile(filter, Filters.element());
+        List<Element> customerElements = xPathExpression.evaluate(document);
 
         for (Element customerEl : customerElements) {
             Customer customer = new Customer();
